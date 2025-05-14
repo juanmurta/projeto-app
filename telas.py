@@ -7,3 +7,23 @@ class HomePage(Screen):
 
 class AjustesPage(Screen):
     pass
+
+
+class AdicionarVendasPage(Screen):
+    pass
+
+
+class ListarVendedoresPage(Screen):
+    pass
+
+
+class FotoPerfilPage(Screen):
+    pass
+
+
+class AdicionarVendedorPage(Screen):
+    pass
+
+
+class TodasVendasPage(Screen):
+    pass
