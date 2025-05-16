@@ -27,9 +27,9 @@ class BannerVenda(GridLayout):
         preco = float(kwargs["preco"])
 
         esquerda = FloatLayout()
-        esquerda_imagem = Image(pos_hint= {"right": 1, "top": 0.95}, size_hint=(1, 0.75),
+        esquerda_imagem = Image(pos_hint={"right": 1, "top": 0.95}, size_hint=(1, 0.75),
                                 source=f"icones/fotos_clientes/{foto_cliente}")
-        esquerda_label = Label(text=cliente, size_hint=(1, 0.2), pos_hint={"right": 1,"top": 0.2})
+        esquerda_label = Label(text=cliente, size_hint=(1, 0.2), pos_hint={"right": 1, "top": 0.2})
         esquerda.add_widget(esquerda_imagem)
         esquerda.add_widget(esquerda_label)
 
@@ -41,7 +41,7 @@ class BannerVenda(GridLayout):
         meio.add_widget(meio_label)
 
         direita = FloatLayout()
-        direita_label_data = Label(text=f"Data: {data}", size_hint=(1, 0.33), pos_hint={"right":1, "top": 0.9})
+        direita_label_data = Label(text=f"Data: {data}", size_hint=(1, 0.33), pos_hint={"right": 1, "top": 0.9})
         direita_label_preco = Label(text=f"Preço: R${preco:,.2f}", size_hint=(1, 0.33), pos_hint={"right": 1, "top": 0.65})
         direita_label_quantidade = Label(text=f"{quantidade} {unidade}", size_hint=(1, 0.33), pos_hint={"right": 1, "top": 0.4})
         direita.add_widget(direita_label_data)
