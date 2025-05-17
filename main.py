@@ -7,6 +7,7 @@ from botoes import *
 import os
 from functools import partial
 from myfirebase import MyFirebase
+from bannervendedor import BannerVendedor
 
 GUI = Builder.load_file("main.kv")
 
@@ -30,6 +31,12 @@ class MainApp(App):
 
     def carregar_infos_usuario(self):
         try:
+            with open("refreshtoken.txt", "r") as arquivo:
+                refresh_token = arquivo.read()
+            local_id, id_token = self.firebase.trocar_token(refresh_token)
+            self.local_id = local_id
+            self.id_token = id_token
+
             # pegar informações do usuário
             requisicao = requests.get(f"https://projetoapp-64657-default-rtdb.firebaseio.com/{self.local_id}.json")
             requisicao_dic = requisicao.json()
@@ -38,6 +45,16 @@ class MainApp(App):
             avatar = requisicao_dic['avatar']
             foto_perfil = self.root.ids["foto_perfil"]
             foto_perfil.source = f"icones/fotos_perfil/{avatar}"
+
+            # preencher o ID unico
+            id_vendedor = requisicao_dic['id_vendedor']
+            pagina_ajustes = self.root.ids["ajustespage"]
+            pagina_ajustes.ids["id_vendedor"].text = f"Seu ID Único: {id_vendedor}"
+
+            # preencher o total de vendas
+            total_vendas = requisicao_dic['total_vendas']
+            homepage = self.root.ids["homepage"]
+            homepage.ids["label_total_vendas"].text = f"[color=#000000]Total de vendas:[/color] [b]R${total_vendas}[/b]"
 
             # preencher lista de vendas
             try:
@@ -52,6 +69,19 @@ class MainApp(App):
                     lista_vendas.add_widget(banner)
             except:
                 pass
+
+            # preencher equipe de vendedores
+            equipe = requisicao_dic["equipe"]
+            lista_equipe = equipe.split(",")
+            pagina_listavendedores = self.root.ids["listarvendedorespage"]
+            lista_vendedores = pagina_listavendedores.ids["lista_vendedores"]
+
+            for id_vendedor_equipe in lista_equipe:
+                if id_vendedor_equipe != "":
+                    banner_vendedor = BannerVendedor(id_vendedor=id_vendedor_equipe)
+                    lista_vendedores.add_widget(banner_vendedor)
+
+            self.mudar_tela("homepage")
         except:
             pass
 
