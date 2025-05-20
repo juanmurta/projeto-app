@@ -73,16 +73,6 @@ class MyFirebase():
             meu_aplicativo.local_id = local_id
             meu_aplicativo.id_token = id_token
 
-        if requisicao.ok:
-            print("Conta criada com sucesso!")
-            refresh_token = requisicao_dic["refreshToken"]
-            local_id = requisicao_dic["localId"]
-            id_token = requisicao_dic["idToken"]
-
-            meu_aplicativo = App.get_running_app()
-            meu_aplicativo.local_id = local_id
-            meu_aplicativo.id_token = id_token
-
             with open("refreshtoken.txt", "w") as arquivo:
                 arquivo.write(refresh_token)
 
