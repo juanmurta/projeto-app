@@ -51,7 +51,6 @@ class MyFirebase():
             pagina_login = meu_aplicativo.root.ids["loginpage"]
             pagina_login.ids["mensagem_login"].text = mensagem_erro
             pagina_login.ids["mensagem_login"].color = (1, 0, 0, 1)
-        print(requisicao_dic)
 
     def fazer_login(self, email, senha):
         link = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={self.API_KEY}"
@@ -64,7 +63,7 @@ class MyFirebase():
         requisicao_dic = requisicao.json()
 
         if requisicao.ok:
-            print("Conta criada com sucesso!")
+            print("Login com sucesso!")
             refresh_token = requisicao_dic["refreshToken"]
             local_id = requisicao_dic["localId"]
             id_token = requisicao_dic["idToken"]
@@ -84,7 +83,6 @@ class MyFirebase():
             pagina_login = meu_aplicativo.root.ids["loginpage"]
             pagina_login.ids["mensagem_login"].text = mensagem_erro
             pagina_login.ids["mensagem_login"].color = (1, 0, 0, 1)
-        print(requisicao_dic)
 
     def trocar_token(self, refresh_token):
         link = f"https://securetoken.googleapis.com/v1/token?key={self.API_KEY}"

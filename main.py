@@ -81,6 +81,7 @@ class MainApp(App):
                     banner_vendedor = BannerVendedor(id_vendedor=id_vendedor_equipe)
                     lista_vendedores.add_widget(banner_vendedor)
 
+
             self.mudar_tela("homepage")
         except:
             pass
@@ -98,6 +99,20 @@ class MainApp(App):
         requisicao = requests.patch(f"https://projetoapp-64657-default-rtdb.firebaseio.com/{self.local_id}.json",
                                     data=info)
         self.mudar_tela("ajustespage")
+
+    def adicionar_vendedor(self, id_vendedor_adicionado):
+        link = f'https://projetoapp-64657-default-rtdb.firebaseio.com/.json?orderBy="id_vendedor"&equalTo="{id_vendedor_adicionado}"'
+        requisicao = requests.get(link)
+        requisicao_dic = requisicao.json()
+
+        pagina_adicionarvendedor = self.root.ids["adicionarvendedorepage"]
+        mensagem_texto = pagina_adicionarvendedor.ids["mensagem_outrovendedor"]
+
+        if requisicao_dic == {}:
+            mensagem_texto.text = print("Vendedor não")
+
+
+        print(requisicao_dic)
 
 
 MainApp().run()
