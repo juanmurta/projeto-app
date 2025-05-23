@@ -43,22 +43,29 @@ class MainApp(App):
 
             # preencher foto de perfil
             avatar = requisicao_dic['avatar']
+            self.avatar = avatar
             foto_perfil = self.root.ids["foto_perfil"]
             foto_perfil.source = f"icones/fotos_perfil/{avatar}"
 
             # preencher o ID unico
             id_vendedor = requisicao_dic['id_vendedor']
+            self.id_vendedor = id_vendedor
             pagina_ajustes = self.root.ids["ajustespage"]
             pagina_ajustes.ids["id_vendedor"].text = f"Seu ID Único: {id_vendedor}"
 
             # preencher o total de vendas
             total_vendas = requisicao_dic['total_vendas']
+            self.total_vendas = total_vendas
             homepage = self.root.ids["homepage"]
             homepage.ids["label_total_vendas"].text = f"[color=#000000]Total de vendas:[/color] [b]R${total_vendas}[/b]"
+
+            # preencher equipe
+            self.equipe = requisicao_dic["equipe"]
 
             # preencher lista de vendas
             try:
                 vendas = requisicao_dic["vendas"][1:]
+                self.vendas = vendas
                 pagina_homepage = self.root.ids["homepage"]
                 lista_vendas = pagina_homepage.ids["lista_vendas"]
                 for venda in vendas:
@@ -80,7 +87,6 @@ class MainApp(App):
                 if id_vendedor_equipe != "":
                     banner_vendedor = BannerVendedor(id_vendedor=id_vendedor_equipe)
                     lista_vendedores.add_widget(banner_vendedor)
-
 
             self.mudar_tela("homepage")
         except:
@@ -105,14 +111,26 @@ class MainApp(App):
         requisicao = requests.get(link)
         requisicao_dic = requisicao.json()
 
-        pagina_adicionarvendedor = self.root.ids["adicionarvendedorepage"]
+        pagina_adicionarvendedor = self.root.ids["adicionarvendedorpage"]
         mensagem_texto = pagina_adicionarvendedor.ids["mensagem_outrovendedor"]
 
         if requisicao_dic == {}:
-            mensagem_texto.text = print("Vendedor não")
-
-
-        print(requisicao_dic)
+            mensagem_texto.text = "Vendedor não encontrado"
+        else:
+            equipe = self.equipe.split(",")
+            if id_vendedor_adicionado in equipe:
+                mensagem_texto.text = "Vendedor já faz parte da equipe"
+            else:
+                self.equipe = self.equipe + f",{id_vendedor_adicionado}"
+                info = f'{{"equipe": "{self.equipe}"}}'
+                requests.patch(f"https://projetoapp-64657-default-rtdb.firebaseio.com/{self.local_id}.json",
+                               data=info)
+                mensagem_texto.text = "Vendedor adicionado com Sucesso"
+                # adicionar novo banner na lista de vendedores
+                pagina_listavendedores = self.root.ids["listarvendedorespage"]
+                lista_vendedores = pagina_listavendedores.ids["lista_vendedores"]
+                banner_vendedor = BannerVendedor(id_vendedor=id_vendedor_adicionado)
+                lista_vendedores.add_widget(banner_vendedor)
 
 
 MainApp().run()
