@@ -16,11 +16,9 @@ class BannerVendedor(FloatLayout):
         self.bind(pos=self.atualizar_rec, size=self.atualizar_rec)
 
         id_vendedor = kwargs['id_vendedor']
-        print(id_vendedor)
         link = f'https://projetoapp-64657-default-rtdb.firebaseio.com/.json?orderBy="id_vendedor"&equalTo="{id_vendedor}"'
         requisicao = requests.get(link)
         requisicao_dic = requisicao.json()
-        print(requisicao_dic)
         valor = list(requisicao_dic.values())[0]
         avatar = valor["avatar"]
         total_vendas = valor["total_vendas"]

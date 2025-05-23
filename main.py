@@ -8,6 +8,8 @@ import os
 from functools import partial
 from myfirebase import MyFirebase
 from bannervendedor import BannerVendedor
+from datetime import date
+
 
 GUI = Builder.load_file("main.kv")
 
@@ -26,6 +28,36 @@ class MainApp(App):
         for foto in arquivos:
             imagem = ImageButton(source=f"icones/fotos_perfil/{foto}", on_release=partial(self.mudar_foto_perfil, foto))
             lista_fotos.add_widget(imagem)
+
+        # carregar as fotos dos clientes
+        arquivos = os.listdir("icones/fotos_clientes")
+        pagina_adicionarvendas = self.root.ids["adicionarvendaspage"]
+        lista_clientes = pagina_adicionarvendas.ids["lista_clientes"]
+        for foto_cliente in arquivos:
+            imagem = ImageButton(source=f"icones/fotos_clientes/{foto_cliente}", on_release=partial(
+                                 self.selecionar_cliente, foto_cliente))
+
+            label = LabelButton(text=foto_cliente.replace(".png", "").capitalize(), on_release=partial(
+                                self.selecionar_cliente, foto_cliente))
+            lista_clientes.add_widget(imagem)
+            lista_clientes.add_widget(label)
+
+        # carregar as fotos dos produtos
+        arquivos = os.listdir("icones/fotos_produtos")
+        pagina_adicionarvendas = self.root.ids["adicionarvendaspage"]
+        lista_produtos = pagina_adicionarvendas.ids["lista_produtos"]
+        for foto_produto in arquivos:
+            imagem = ImageButton(source=f"icones/fotos_produtos/{foto_produto}", on_release=partial(
+                                 self.selecionar_produto, foto_produto))
+            label = LabelButton(text=foto_produto.replace(".png", "").capitalize(), on_release=partial(
+                                 self.selecionar_produto, foto_produto))
+            lista_produtos.add_widget(imagem)
+            lista_produtos.add_widget(label)
+
+        # carregar a data
+        pagina_adicionarvendas = self.root.ids["adicionarvendaspage"]
+        label_data = pagina_adicionarvendas.ids["label_data"]
+        label_data.text = f"Data: {date.today().strftime('%d/%m/%Y')}"
 
         self.carregar_infos_usuario()
 
@@ -131,6 +163,51 @@ class MainApp(App):
                 lista_vendedores = pagina_listavendedores.ids["lista_vendedores"]
                 banner_vendedor = BannerVendedor(id_vendedor=id_vendedor_adicionado)
                 lista_vendedores.add_widget(banner_vendedor)
+
+    def selecionar_cliente(self, foto, *args):
+        # mudar texto para branco
+        pagina_adicionarvendas = self.root.ids["adicionarvendaspage"]
+        lista_clientes = pagina_adicionarvendas.ids["lista_clientes"]
+        for item in list(lista_clientes.children):
+            item.color = (1, 1, 1, 1)
+            # mudar texto para azul
+            try:
+                texto = item.text
+                texto = texto.lower() + ".png"
+                if foto == texto:
+                    item.color = (0, 207/255, 219/255, 1)
+            except:
+                pass
+
+    def selecionar_produto(self, foto, *args):
+        # mudar texto para branco
+        pagina_adicionarvendas = self.root.ids["adicionarvendaspage"]
+        lista_produtos = pagina_adicionarvendas.ids["lista_produtos"]
+        for item in list(lista_produtos.children):
+            item.color = (1, 1, 1, 1)
+            # mudar texto para azul
+            try:
+                texto = item.text
+                texto = texto.lower() + ".png"
+                if foto == texto:
+                    item.color = (0, 207/255, 219/255, 1)
+            except:
+                pass
+
+    def selecionar_unidade(self, id_label, *args):
+        pagina_adicionarvendas = self.root.ids["adicionarvendaspage"]
+
+        # pintar de branco
+        pagina_adicionarvendas.ids["unidades_kg"].color = (1, 1, 1, 1)
+        pagina_adicionarvendas.ids["unidades_unidades"].color = (1, 1, 1, 1)
+        pagina_adicionarvendas.ids["unidades_litros"].color = (1, 1, 1, 1)
+
+        # pintar selecionado de azul
+        pagina_adicionarvendas.ids[id_label].color = (0, 207/255, 219/255, 1)
+
+
+
+
 
 
 MainApp().run()
