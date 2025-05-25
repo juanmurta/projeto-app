@@ -1,16 +1,18 @@
 from kivy.app import App
 from kivy.lang import Builder
-import requests
 from bannervenda import BannerVenda
 from telas import *
 from botoes import *
+import requests
 import os
+import certifi
 from functools import partial
 from myfirebase import MyFirebase
 from bannervendedor import BannerVendedor
 from datetime import date
 
 
+os.environ["SSL_CERT_FILE"] = certifi.where()
 GUI = Builder.load_file("main.kv")
 
 
@@ -73,7 +75,8 @@ class MainApp(App):
             self.id_token = id_token
 
             # pegar informações do usuário
-            requisicao = requests.get(f"https://projetoapp-64657-default-rtdb.firebaseio.com/{self.local_id}.json")
+            requisicao = requests.get(f"https://projetoapp-64657-default-rtdb.firebaseio.com/"
+                                      f"{self.local_id}.json?auth={self.id_token}")
             requisicao_dic = requisicao.json()
 
             # preencher foto de perfil
@@ -139,7 +142,7 @@ class MainApp(App):
 
         # alterando informação no firebase
         info = f'{{"avatar": "{foto}"}}'
-        requisicao = requests.patch(f"https://projetoapp-64657-default-rtdb.firebaseio.com/{self.local_id}.json",
+        requisicao = requests.patch(f"https://projetoapp-64657-default-rtdb.firebaseio.com/{self.local_id}.json?auth={self.id_token}",
                                     data=info)
         self.mudar_tela("ajustespage")
 
@@ -160,7 +163,7 @@ class MainApp(App):
             else:
                 self.equipe = self.equipe + f",{id_vendedor_adicionado}"
                 info = f'{{"equipe": "{self.equipe}"}}'
-                requests.patch(f"https://projetoapp-64657-default-rtdb.firebaseio.com/{self.local_id}.json",
+                requests.patch(f"https://projetoapp-64657-default-rtdb.firebaseio.com/{self.local_id}.json?auth={self.id_token}",
                                data=info)
                 mensagem_texto.text = "Vendedor adicionado com Sucesso"
                 # adicionar novo banner na lista de vendedores
@@ -174,9 +177,10 @@ class MainApp(App):
         # mudar texto para branco
         pagina_adicionarvendas = self.root.ids["adicionarvendaspage"]
         lista_clientes = pagina_adicionarvendas.ids["lista_clientes"]
+
         for item in list(lista_clientes.children):
             item.color = (1, 1, 1, 1)
-            # mudar texto para azul
+            # mudar as letras do texto para azul
             try:
                 texto = item.text
                 texto = texto.lower() + ".png"
@@ -190,6 +194,7 @@ class MainApp(App):
         # mudar texto para branco
         pagina_adicionarvendas = self.root.ids["adicionarvendaspage"]
         lista_produtos = pagina_adicionarvendas.ids["lista_produtos"]
+
         for item in list(lista_produtos.children):
             item.color = (1, 1, 1, 1)
             # mudar texto para azul
@@ -253,7 +258,7 @@ class MainApp(App):
             info = (f'{{"cliente": "{cliente}", "produto": "{produto}", "foto_cliente": "{foto_cliente}", '
                     f'"foto_produto": "{foto_produto}", "data": "{data}", "unidade": "{unidade}", '
                     f'"preco": "{preco}", "quantidade": "{quantidade}"}}')
-            requests.post(f"https://projetoapp-64657-default-rtdb.firebaseio.com/{self.local_id}/vendas.json",
+            requests.post(f"https://projetoapp-64657-default-rtdb.firebaseio.com/{self.local_id}/vendas.json?auth={self.id_token}",
                           data=info)
 
             banner = BannerVenda(cliente=cliente, produto=produto, foto_cliente=foto_cliente,
@@ -263,11 +268,11 @@ class MainApp(App):
             lista_vendas.add_widget(banner)
 
             requisicao = requests.get(f"https://projetoapp-64657-default-rtdb.firebaseio.com/"
-                                      f"{self.local_id}/total_vendas.json")
+                                      f"{self.local_id}/total_vendas.json?auth={self.id_token}")
             total_vendas = float(requisicao.json())
             total_vendas += preco
             info = f'{{"total_vendas": "{total_vendas}"}}'
-            requests.patch(f"https://projetoapp-64657-default-rtdb.firebaseio.com/{self.local_id}.json", data=info)
+            requests.patch(f"https://projetoapp-64657-default-rtdb.firebaseio.com/{self.local_id}.json?auth={self.id_token}", data=info)
             homepage = self.root.ids["homepage"]
             homepage.ids["label_total_vendas"].text = f"[color=#000000]Total de vendas:[/color] [b]R${total_vendas}[/b]"
 
