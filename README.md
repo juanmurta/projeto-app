@@ -2,7 +2,7 @@
 
 Um aplicativo móvel desenvolvido com Kivy para gerenciamento de vendas, equipes e métricas de desempenho.
 
-![Logo do Aplicativo](icones\logo.png)
+![Logo do Aplicativo](https://github.com/juanmurta/projeto-app/blob/810facfadb554777892411289b9148a091883a3f/icones/logo.png)
 
 ## 📋 Descrição
 
