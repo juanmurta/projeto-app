@@ -229,7 +229,7 @@ class MainApp(App):
             pagina_adicionarvendas.ids["label_selecione_produto"].color = (1, 0, 0, 1)
         if not unidade:
             pagina_adicionarvendas.ids["unidades_kg"].color = (1, 0, 0, 1)
-            pagina_adicionarvendas.ids["unidades_unidade"].color = (1, 0, 0, 1)
+            pagina_adicionarvendas.ids["unidades_unidades"].color = (1, 0, 0, 1)
             pagina_adicionarvendas.ids["unidades_litros"].color = (1, 0, 0, 1)
         if not preco:
             pagina_adicionarvendas.ids["label_preco"].color = (1, 0, 0, 1)
@@ -276,6 +276,76 @@ class MainApp(App):
         self.cliente = None
         self.produto = None
         self.unidade = None
+
+    def carregar_todas_vendas(self):
+        # pegar informações da empresa
+        pagina_todasvendas = self.root.ids["todasvendaspage"]
+        lista_vendas = pagina_todasvendas.ids["lista_vendas"]
+
+        for item in list(lista_vendas.children):
+            lista_vendas.remove_widget(item)
+
+        requisicao = requests.get(f'https://projetoapp-64657-default-rtdb.firebaseio.com/.json?orderBy="id_vendedor"')
+        requisicao_dic = requisicao.json()
+
+        # preencher foto de perfil
+        foto_perfil = self.root.ids["foto_perfil"]
+        foto_perfil.source = f"icones/fotos_perfil/logo.png"
+
+        total_vendas = 0
+        for local_id_usuario in requisicao_dic:
+            try:
+                vendas = requisicao_dic[local_id_usuario]["vendas"]
+                for id_venda in vendas:
+                    venda = vendas[id_venda]
+                    total_vendas += float(venda["preco"])
+                    banner = BannerVenda(cliente=venda["cliente"], produto=venda["produto"], foto_cliente=venda["foto_cliente"],
+                                         foto_produto=venda["foto_produto"], data=venda["data"], preco=venda["preco"],
+                                         quantidade=venda["quantidade"], unidade=venda["unidade"])
+                    lista_vendas.add_widget(banner)
+            except Exception as e:
+                print(e)
+
+        # preencher o total de vendas
+        pagina_todasvendas.ids["label_total_vendas"].text = f"[color=#000000]Total de vendas:[/color] [b]R${total_vendas}[/b]"
+
+        # redirecionar para pagina
+        self.mudar_tela("todasvendaspage")
+
+    def sair_todas_vendas(self, id_tela):
+        foto_perfil = self.root.ids["foto_perfil"]
+        foto_perfil.source = f"icones/fotos_perfil/{self.avatar}"
+
+        self.mudar_tela(id_tela)
+
+    def carregar_vendas_vendedor(self, dic_info_vendedor, *args):
+        pagina_vendasoutrovendedor = self.root.ids["vendasoutrovendedorpage"]
+        lista_vendas = pagina_vendasoutrovendedor.ids["lista_vendas"]
+
+        try:
+            vendas = dic_info_vendedor["vendas"]
+            for item in list(lista_vendas.children):
+                lista_vendas.remove_widget(item)
+
+            for id_venda in vendas:
+                venda = vendas[id_venda]
+                banner = BannerVenda(cliente=venda["cliente"], produto=venda["produto"], foto_cliente=venda["foto_cliente"],
+                                     foto_produto=venda["foto_produto"], data=venda["data"], preco=venda["preco"],
+                                     quantidade=venda["quantidade"], unidade=venda["unidade"])
+                lista_vendas.add_widget(banner)
+        except Exception as e:
+            print(e)
+
+        # preencher vendas
+        total_vendas = dic_info_vendedor["total_vendas"]
+        pagina_vendasoutrovendedor.ids["label_total_vendas"].text = f"[color=#000000]Total de vendas:[/color] [b]R${total_vendas}[/b]"
+
+        # preencher foto perfil
+        foto_perfil = self.root.ids["foto_perfil"]
+        avatar = dic_info_vendedor["avatar"]
+        foto_perfil.source = f"icones/fotos_perfil/{avatar}"
+
+        self.mudar_tela("vendasoutrovendedorpage")
 
 
 MainApp().run()
